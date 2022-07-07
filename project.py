@@ -35,7 +35,6 @@ for event in response:
             VenueName.append(ven["name"])
             VenueAddy.append(ven["address"]["line1"])
 
-
 EventDetails = {"Event ID":Events, "Event Name":eventName, "Event Date":eventDate, "Venue Name":VenueName, "Venue Address":VenueAddy}
 
 #creates and prints out a database
