@@ -4,6 +4,8 @@ import pandas as pd
 
 import sqlalchemy as db
 
+import sys
+
 # root URL to derive events
 url = "https://app.ticketmaster.com/discovery/v2/events"
 
@@ -12,7 +14,6 @@ API_KEY = "zWmwA15ShfzkNwMGKQ7Ih2RDbAWaoIvV"
 # Event Search Parameters
 parameters = {
   'apikey': API_KEY, 'countryCode': 'US', 'classificationName': 'music',
-  'startDateTime': '2022-07-01T14:00:00Z',
   'endDateTime': '2022-08-01T14:00:00Z',
   'sort': 'date,asc', 'city': '', 'stateCode': ''
   }
@@ -23,6 +24,7 @@ parameters['stateCode'] = input("Enter State Code: ")
 
 # get all events within city
 response = requests.get(url, parameters)
+
 response = response.json()
 Events = list()
 eventName = list()
@@ -32,13 +34,16 @@ VenueAddy = list()
 
 # extract Event Id from json and input in empty list
 for event in response:
-    for x in (response["_embedded"]["events"]):
-        Events.append(x["id"])
-        eventName.append(x["name"])
-        eventDate.append(x["dates"]["start"]["localDate"])
-        for ven in (x["_embedded"]["venues"]):
-            VenueName.append(ven["name"])
-            VenueAddy.append(ven["address"]["line1"])
+    try:
+        for x in (response["_embedded"]["events"]):
+            Events.append(x["id"])
+            eventName.append(x["name"])
+            eventDate.append(x["dates"]["start"]["localDate"])
+            for ven in (x["_embedded"]["venues"]):
+                VenueName.append(ven["name"])
+                VenueAddy.append(ven["address"]["line1"])
+    except KeyError:
+        sys.exit("\nInvalid City Name or State Code! Try Again!")
 
 EventDetails = {"Event ID": Events, "Event Name": eventName,
                 "Event Date": eventDate, "Venue Name": VenueName,
