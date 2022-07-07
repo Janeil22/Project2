@@ -18,19 +18,28 @@ parameters['stateCode'] = "NV" #input("Enter State Code: ")
 response = requests.get(url, parameters)
 response = response.json()
 Events = list()
+eventName = list()
+eventDate = list()
+eventVenue = list()
 
 #extract Event Id from json and input in empty list
 for event in response:
     for x in (response["_embedded"]["events"]):
         Events.append(x["id"])
+        eventName.append(x["name"])
+        eventDate.append(x["dates"]["start"]["localDate"])
+        eventVenue.append(x["_embedded"]["venues"])
 
-#Events = {"EventIDs":Events, "location":[], "Date":[], "Performer" : []}
+EventDetails = {"Event ID":Events, "Event Name":eventName, "Event Date":eventDate, "Event Venues":eventVenue}
 
+data = pd.DataFrame.from_dict(EventDetails)
 
+'''
+print(Events[0])
 details = requests.get('https://app.ticketmaster.com/discovery/v2/events/' +Events[0]+ '.json?apikey=zWmwA15ShfzkNwMGKQ7Ih2RDbAWaoIvV', {'locale':'en-us'})
 print(details.json())
 
-'''for event in Events["EventIDs"]:
+for event in Events["EventIDs"]:
     details = requests.get(url, {'id':event, 'apikey':API_KEY})
     details = details.json()
     print(details)
