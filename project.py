@@ -1,5 +1,7 @@
 import requests
+
 import pandas as pd
+
 import sqlalchemy as db
 
 #root URL to derive events
@@ -46,3 +48,4 @@ def create_database(info, db_name, table_name):
     print(pd.DataFrame(query_result), "\n")
 
 create_database(EventDetails, "EVENTS", "Details")
+
