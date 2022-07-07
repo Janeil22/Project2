@@ -11,8 +11,8 @@ API_KEY = "zWmwA15ShfzkNwMGKQ7Ih2RDbAWaoIvV"
 parameters = {'apikey':API_KEY, 'countryCode':'US', 'classificationName':'music', 'startDateTime':'2022-07-01T14:00:00Z', 'endDateTime': '2022-08-01T14:00:00Z', 'sort':'date,asc', 'city':'', 'stateCode':''}
 
 #Get City name and State Code from user
-parameters['city'] = "Las Vegas" #input("Enter City: ")
-parameters['stateCode'] = "NV" #input("Enter State Code: ")
+parameters['city'] = "Minneapolis" #input("Enter City: ")
+parameters['stateCode'] = "MN" #input("Enter State Code: ")
 
 #get all events within city
 response = requests.get(url, parameters)
@@ -20,7 +20,8 @@ response = response.json()
 Events = list()
 eventName = list()
 eventDate = list()
-eventVenue = list()
+VenueName = list()
+VenueAddy = list()
 
 #extract Event Id from json and input in empty list
 for event in response:
@@ -28,24 +29,20 @@ for event in response:
         Events.append(x["id"])
         eventName.append(x["name"])
         eventDate.append(x["dates"]["start"]["localDate"])
-        eventVenue.append(x["_embedded"]["venues"])
+        for ven in (x["_embedded"]["venues"]):
+            VenueName.append(ven["name"])
+            VenueAddy.append(ven["address"]["line1"])
 
-EventDetails = {"Event ID":Events, "Event Name":eventName, "Event Date":eventDate, "Event Venues":eventVenue}
 
-data = pd.DataFrame.from_dict(EventDetails)
+EventDetails = {"Event ID":Events, "Event Name":eventName, "Event Date":eventDate, "Venue Name":VenueName, "Venue Address":VenueAddy}
 
-'''
-print(Events[0])
-details = requests.get('https://app.ticketmaster.com/discovery/v2/events/' +Events[0]+ '.json?apikey=zWmwA15ShfzkNwMGKQ7Ih2RDbAWaoIvV', {'locale':'en-us'})
-print(details.json())
+#creates and prints out a database
+def create_database(info, db_name, table_name):
+    data = pd.DataFrame.from_dict(info)
+    engine = db.create_engine('sqlite:///' + db_name + '.db')
+    
+    data.to_sql(table_name, con=engine, if_exists='replace', index=False)
+    query_result = engine.execute("SELECT * FROM " + table_name + ";").fetchall()
+    print(pd.DataFrame(query_result), "\n")
 
-for event in Events["EventIDs"]:
-    details = requests.get(url, {'id':event, 'apikey':API_KEY})
-    details = details.json()
-    print(details)
-    break
-    for x in (details["_embedded"]["venues"]):
-        Events["location"].append(["name"])
-        Events["location"].append(["address"]["line1"])
-        Events["location"].append(["city"]["name"])
-        Events["location"].append(["state"]["stateCode"])'''
+create_database(EventDetails, "EVENTS", "Details")
