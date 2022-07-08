@@ -6,15 +6,15 @@ import sqlalchemy as db
 
 import sys
 
+import os
+
 # root URL to derive events
 url = "https://app.ticketmaster.com/discovery/v2/events"
 
-API_KEY = "zWmwA15ShfzkNwMGKQ7Ih2RDbAWaoIvV"
-
 # Event Search Parameters
 parameters = {
-  'apikey': API_KEY, 'countryCode': 'US', 'classificationName': 'music',
-  'startDateTime': '2022-07-05T14:00:00Z',
+  'apikey': os.environ.get('TICKETMASTER_API_KEY'), 'countryCode': 'US',
+  'classificationName': 'music', 'startDateTime': '2022-07-05T14:00:00Z',
   'endDateTime': '2022-08-05T14:00:00Z',
   'sort': 'date,asc', 'city': '', 'stateCode': ''
   }
